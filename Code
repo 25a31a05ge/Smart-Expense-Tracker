@@ -1,0 +1,234 @@
+#include <iostream>
+#include <fstream>
+#include <sstream>
+#include <limits>
+using namespace std;
+
+struct Expense {
+    string date;
+    string category;
+    float amount;
+};
+
+// 🔐 LOGIN (using getline)
+bool login() {
+    string password, input;
+
+    cout << "🔐 Create a password: ";
+    getline(cin, password);
+
+    cout << "\n🔑 Login to continue\n";
+
+    for (int i = 3; i > 0; i--) {
+        cout << "Enter password: ";
+        getline(cin, input);
+
+        if (input == password) {
+            cout << "✅ Access Granted!\n";
+            return true;
+        } else {
+            cout << "❌ Wrong Password! Attempts left: " << i - 1 << endl;
+        }
+    }
+    return false;
+}
+
+// ➕ ADD EXPENSE
+void addExpense() {
+    Expense e;
+    ofstream file("expenses.csv", ios::app);
+
+    cout << "Enter date (DD-MM-YYYY): ";
+    getline(cin, e.date);
+
+    cout << "Enter category: ";
+    getline(cin, e.category);
+
+    string amountInput;
+    cout << "Enter amount: ";
+    getline(cin, amountInput);
+
+    try {
+        e.amount = stof(amountInput);
+    } catch (...) {
+        cout << "❌ Invalid amount!\n";
+        return;
+    }
+
+    file << e.date << "," << e.category << "," << e.amount << endl;
+    file.close();
+
+    cout << "✅ Expense added!\n";
+}
+
+// 📄 VIEW EXPENSES
+void viewExpenses() {
+    ifstream file("expenses.csv");
+    string line;
+
+    cout << "\nDate\t\tCategory\tAmount\n";
+
+    while (getline(file, line)) {
+        stringstream ss(line);
+        string date, category, amount;
+
+        getline(ss, date, ',');
+        getline(ss, category, ',');
+        getline(ss, amount, ',');
+
+        cout << date << "\t" << category << "\t\t" << amount << endl;
+    }
+}
+
+// 🔍 SEARCH BY DATE
+void searchByDate() {
+    ifstream file("expenses.csv");
+    string line, searchDate;
+    bool found = false;
+
+    cout << "Enter date: ";
+    getline(cin, searchDate);
+
+    while (getline(file, line)) {
+        stringstream ss(line);
+        string date, category, amount;
+
+        getline(ss, date, ',');
+        getline(ss, category, ',');
+        getline(ss, amount, ',');
+
+        if (date == searchDate) {
+            cout << date << " | " << category << " | " << amount << endl;
+            found = true;
+        }
+    }
+
+    if (!found)
+        cout << "❌ No records found!\n";
+}
+
+// 📅 MONTHLY REPORT
+void monthlyReport() {
+    ifstream file("expenses.csv");
+    string line, month;
+    float total = 0;
+
+    cout << "Enter month (MM): ";
+    getline(cin, month);
+
+    while (getline(file, line)) {
+        stringstream ss(line);
+        string date, category, amount;
+
+        getline(ss, date, ',');
+        getline(ss, category, ',');
+        getline(ss, amount, ',');
+
+        if (date.substr(3, 2) == month) {
+            total += stof(amount);
+        }
+    }
+
+    cout << "📅 Total for month " << month << ": " << total << endl;
+}
+
+// 💰 TOTAL EXPENSE
+void totalExpense() {
+    ifstream file("expenses.csv");
+    string line;
+    float total = 0;
+
+    while (getline(file, line)) {
+        stringstream ss(line);
+        string date, category, amount;
+
+        getline(ss, date, ',');
+        getline(ss, category, ',');
+        getline(ss, amount, ',');
+
+        total += stof(amount);
+    }
+
+    cout << "💰 Total Expense: " << total << endl;
+}
+void deleteExpense() {
+    ifstream file("expenses.csv");
+    ofstream temp("temp.csv");
+
+    string line, searchDate;
+    bool found = false;
+
+    cout << "Enter date to delete: ";
+    getline(cin, searchDate);
+
+    while (getline(file, line)) {
+        stringstream ss(line);
+        string date, category, amount;
+
+        getline(ss, date, ',');
+        getline(ss, category, ',');
+        getline(ss, amount, ',');
+
+        // Skip only the first matching record
+        if (date == searchDate && !found) {
+            found = true;
+            continue;
+        }
+
+        temp << date << "," << category << "," << amount << endl;
+    }
+
+    file.close();
+    temp.close();
+
+    remove("expenses.csv");
+    rename("temp.csv", "expenses.csv");
+
+    if (found)
+        cout << "🗑️ Expense deleted!\n";
+    else
+        cout << "❌ Record not found!\n";
+}
+// 🚀 MAIN
+int main() {
+
+    if (!login()) return 0;
+
+    int choice;
+
+    do {
+        cout << "\n===== SMART EXPENSE TRACKER =====\n";
+        cout << "1. Add Expense\n";
+        cout << "2. View Expenses\n";
+        cout << "3. Search by Date\n";
+        cout << "4. Monthly Report\n";
+        cout << "5. Total Expense\n";
+        cout << "6. Exit\n";                                                                         cout << "6. Delete Expense\n";
+cout << "7. Exit\n";
+        cout << "Enter choice: ";
+
+        string input;
+        getline(cin, input);
+
+        try {
+            choice = stoi(input);
+        } catch (...) {
+            cout << "❌ Invalid choice!\n";
+            continue;
+        }
+
+        switch(choice) {
+            case 1: addExpense(); break;
+            case 2: viewExpenses(); break;
+            case 3: searchByDate(); break;
+            case 4: monthlyReport(); break;
+            case 5: totalExpense(); break;
+            case 6: deleteExpense(); break;
+            case 7: cout << "Exiting...\n"; break;
+            default: cout << "❌ Invalid choice!\n";
+        }
+
+    } while(choice != 7);
+
+    return 0;
+}
