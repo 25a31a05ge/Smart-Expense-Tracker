@@ -1,10 +1,10 @@
 # SMART-EXPENSE-TACKER
 
 ## 👩‍💻TEAM MEMBERS
-Member 1 VASAMSETTI JAHNAVI DEVI
-Member 2 DEVISETTI VENKATA RISHI RAJ
-Member 3 TELU MALLIKARJUN
-Member 4 GUMMALLA VEERA MANIKANTA VIVEK
+  1) TELU MALLIKARJUN
+  2) DEVISETTI VENKATA RISHI RAJ
+  3) VASAMSETTI JAHNAVI DEVI
+  4) GUMMALLA VEERA MANIKANTA VIVEK
 ## 🎯OBJECTIVES
 
 The objective of this project is to develop a simple and efficient application to manage daily expenses. The system allows users to add, view, search, delete, and analyze expenses without using external files.
